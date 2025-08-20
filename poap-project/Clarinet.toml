@@ -1,0 +1,12 @@
+[project]
+name = "poap-project"
+description = "Proof of Attendance Protocol (POAP) project"
+authors = ["Your Name <you@example.com>"]
+telemetry = false
+
+[contracts.sip009-trait]
+path = "contracts/sip009-trait.clar"
+
+[contracts.poap]
+path = "contracts/poap.clar"
+depends_on = ["sip009-trait"]

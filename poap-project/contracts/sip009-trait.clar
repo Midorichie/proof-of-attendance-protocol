@@ -1,4 +1,4 @@
-;; SIP-009 NFT Trait Definition
+;; SIP-009 NFT Trait Definition (local copy)
 
 (define-trait sip009-nft-trait
   (

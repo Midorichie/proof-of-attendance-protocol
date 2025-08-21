@@ -1,8 +1,9 @@
 [project]
 name = "poap-project"
-description = "Proof of Attendance Protocol (POAP) project"
-authors = ["Your Name <you@example.com>"]
+description = "Proof of Attendance Protocol (POAP) – soulbound SIP-009 NFT with pause/revoke and safe organizer rotation"
+authors = ["midorichie"]
 telemetry = false
+version = "0.3.0"
 
 [contracts.sip009-trait]
 path = "contracts/sip009-trait.clar"

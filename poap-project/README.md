@@ -1,75 +1,21 @@
-# POAP (Proof of Attendance Protocol) – Clarity
+# POAP (Proof of Attendance Protocol) – Clarity on Stacks
 
-Non-transferable NFT (“soulbound”) for event attendance on Stacks. Organizers mint a unique NFT to each attendee. The contract implements the local SIP-009 NFT trait.
+Soulbound SIP-009 NFTs for event attendance. Organizers mint badges to attendees, can pause minting, revoke badges, and rotate organizer with a two-step process.
+
+## Features
+- Soulbound NFTs (transfers disabled).
+- Organizer-only mint with one-claim-per-principal guard.
+- Pause/unpause minting.
+- Revoke a badge (logical burn): `get-owner` returns `none` for revoked IDs.
+- Two-step organizer rotation: `propose-organizer` -> `accept-organizer`.
+- SIP-009 compliant read-only functions and token URI storage.
 
 ## Files
-- `contracts/sip009-trait.clar` – Local copy of the SIP-009 NFT trait.
-- `contracts/poap.clar` – Soulbound NFT contract implementing the trait.
+- `contracts/sip009-trait.clar` – Local SIP-009 trait definition.
+- `contracts/poap.clar` – POAP contract.
 - `Clarinet.toml` – Project config.
 
-## Prerequisites
-- [Clarinet](https://docs.hiro.so/clarinet) installed.
-
-## Quick Start
+## Setup
 ```bash
+# from project root
 clarinet check
-Usage (Console)
-Organizer is the deployer by default.
-
-Mint to attendee (optional URI):
-
-clarity
-Copy
-Edit
-;; with URI
-(contract-call? .poap mint 'ST1... (some "https://example.com/metadata/123.json"))
-
-;; without URI
-(contract-call? .poap mint 'ST1... none)
-Query ownership
-
-clarity
-Copy
-Edit
-(contract-call? .poap get-owner u1)
-Last token id
-
-clarity
-Copy
-Edit
-(contract-call? .poap get-last-token-id)
-Token URI
-
-clarity
-Copy
-Edit
-(contract-call? .poap get-token-uri u1)
-Check if someone already claimed
-
-clarity
-Copy
-Edit
-(contract-call? .poap has-claim 'ST1...)
-Rotate organizer (optional)
-
-clarity
-Copy
-Edit
-(contract-call? .poap set-organizer 'ST1NEWORGANIZER...)
-Design & Security
-Soulbound: transfer always returns ERR-NONTRANSFERABLE.
-
-One-per-attendee: claimed map prevents multiple mints to the same principal for this event.
-
-Organizer-only minting: enforced on mint and set-organizer.
-
-SIP-009 Compliance: implements required entrypoints with local trait, no external dependency.
-
-Per-token metadata: optional token-uris map set at mint time.
-
-Next Steps
-Add tests in tests/poap_test.ts.
-
-Support multiple events via event IDs (collection per event).
-
-Off-chain indexer / simple UI to view badges.

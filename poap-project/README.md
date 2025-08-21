@@ -1,21 +1,23 @@
-# POAP (Proof of Attendance Protocol) – Clarity on Stacks
+# Proof of Attendance Protocol (POAP) - Clarity
 
-Soulbound SIP-009 NFTs for event attendance. Organizers mint badges to attendees, can pause minting, revoke badges, and rotate organizer with a two-step process.
+This project implements a **soulbound Proof of Attendance Protocol** on the Stacks blockchain.
 
 ## Features
-- Soulbound NFTs (transfers disabled).
-- Organizer-only mint with one-claim-per-principal guard.
-- Pause/unpause minting.
-- Revoke a badge (logical burn): `get-owner` returns `none` for revoked IDs.
-- Two-step organizer rotation: `propose-organizer` -> `accept-organizer`.
-- SIP-009 compliant read-only functions and token URI storage.
+- **Soulbound NFTs** (cannot be transferred).
+- **One per attendee** (enforced via `claimed` mapping).
+- **Blacklist system** (prevent malicious actors from minting).
+- **Organizer-only minting**.
+- **Organizer transfer** (ownership of event can be reassigned).
+- **Modular option**:
+  - `poap-nft.clar` → Core NFT (SIP-009 compliant).
+  - `poap-minter.clar` → Business logic.
 
-## Files
-- `contracts/sip009-trait.clar` – Local SIP-009 trait definition.
-- `contracts/poap.clar` – POAP contract.
-- `Clarinet.toml` – Project config.
+## Contracts
+- `sip009-trait.clar` → SIP-009 trait definition.
+- `poap-minter.clar` → Minting logic.
+- `poap-nft.clar` → NFT logic.
 
 ## Setup
 ```bash
-# from project root
 clarinet check
+clarinet test

@@ -1,67 +1,60 @@
 ;; --------------------------------
 ;; Proof of Attendance Protocol (POAP)
-;; Non-transferable (soulbound) NFTs
-;; Organizer mints attendance NFTs to participants
+;; --------------------------------
+;; Attendees receive non-transferable NFTs (soulbound)
+;; Only the event organizer can mint new POAPs
+;; Implements SIP-009 NFT standard
 ;; --------------------------------
 
-;; Import SIP-009 NFT Trait
-(use-trait sip009-nft-trait .sip009-trait)
+(use-trait sip009 <sip009-trait>)
 
 ;; --------------------------------
-;; Data definitions
+;; State variables
 ;; --------------------------------
-
 (define-data-var event-organizer principal tx-sender)
 (define-data-var total-supply uint u0)
 
-;; NFT: store ownership of tokens
-(define-non-fungible-token poap uint)
+;; Mapping from token-id -> owner
+(define-nft poap uint)
 
-;; Store metadata URIs for tokens
+;; Mapping from token-id -> metadata URI
 (define-map token-uris uint { uri: (string-utf8 256) })
 
-;; Track claimed addresses (each principal can only mint one POAP)
+;; Track which principals already claimed
 (define-map claimed principal bool)
 
 ;; --------------------------------
-;; Error codes
+;; Error constants
 ;; --------------------------------
 (define-constant ERR-NOT-ORGANIZER (err u100))
 (define-constant ERR-ALREADY-CLAIMED (err u101))
-(define-constant ERR-NOT-OWNER (err u102))
+(define-constant ERR-NOT-EXIST (err u102))
 (define-constant ERR-NONTRANSFERABLE (err u103))
-(define-constant ERR-NOT-EXIST (err u104))
 
 ;; --------------------------------
 ;; Public functions
 ;; --------------------------------
 
-;; Mint a POAP for an attendee (only organizer can mint)
+;; Mint a POAP (only organizer, one per attendee)
 (define-public (mint (recipient principal) (uri (string-utf8 256)))
-  (if (is-eq tx-sender (var-get event-organizer))
-      (if (is-some (map-get? claimed recipient))
-          ERR-ALREADY-CLAIMED
-          (let (
-                 (id (+ u1 (var-get total-supply)))
-               )
-            (begin
-              ;; mint NFT
-              (nft-mint? poap id recipient)
-
-              ;; record metadata
-              (map-set token-uris id { uri: uri })
-
-              ;; mark recipient as claimed
-              (map-set claimed recipient true)
-
-              ;; update supply
-              (var-set total-supply id)
-
-              (ok id)
+  (begin
+    (if (not (is-eq tx-sender (var-get event-organizer)))
+        ERR-NOT-ORGANIZER
+        (if (is-some (map-get? claimed recipient))
+            ERR-ALREADY-CLAIMED
+            (let (
+                  (id (+ u1 (var-get total-supply)))
+                 )
+              (begin
+                (try! (nft-mint? poap id recipient))
+                (map-set token-uris id { uri: uri })
+                (map-set claimed recipient true)
+                (var-set total-supply id)
+                (ok id)
+              )
             )
-          )
-      )
-      ERR-NOT-ORGANIZER
+        )
+    )
   )
 )
 
@@ -69,7 +62,7 @@
 ;; SIP-009 required entrypoints
 ;; --------------------------------
 
-;; Soulbound: disallow all transfers
+;; Disallow transfers (soulbound)
 (define-public (transfer (id uint) (sender principal) (recipient principal))
   ERR-NONTRANSFERABLE
 )

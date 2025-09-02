@@ -1,13 +1,13 @@
 [project]
 name = "poap-project"
-description = "Proof of Attendance Protocol (POAP) – soulbound SIP-009 NFT with pause/revoke and safe organizer rotation"
-authors = ["midorichie"]
-telemetry = false
-version = "0.3.0"
+description = "Proof of Attendance Protocol (POAP) built with Clarity"
+authors = ["Your Name <you@example.com>"]
 
 [contracts.sip009-trait]
 path = "contracts/sip009-trait.clar"
 
-[contracts.poap]
-path = "contracts/poap.clar"
-depends_on = ["sip009-trait"]
+[contracts.poap-nft]
+path = "contracts/poap-nft.clar"
+
+[contracts.poap-minter]
+path = "contracts/poap-minter.clar"
